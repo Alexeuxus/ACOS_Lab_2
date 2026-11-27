@@ -12,7 +12,12 @@ add_executable(peer
     src/common/socket_io.cpp
     src/common/protocol.cpp
     src/inbound/listener.cpp
+    src/inbound/inbound_fsm.cpp
+    src/inbound/connection_loop.cpp
 )
+
+find_package(Threads REQUIRED)
+target_link_libraries(peer PRIVATE Threads::Threads)
 
 add_executable(socket_io_test
     tests/socket_io_test.cpp
@@ -42,5 +47,27 @@ target_include_directories(listener_test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-find_package(Threads REQUIRED)
-target_link_libraries(peer PRIVATE Threads::Threads)
+add_executable(inbound_fsm_test
+    tests/inbound_fsm_test.cpp
+    src/inbound/inbound_fsm.cpp
+    src/common/socket_io.cpp
+    src/common/protocol.cpp
+)
+
+target_include_directories(inbound_fsm_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+add_executable(connection_loop_test
+    tests/connection_loop_test.cpp
+    src/inbound/connection_loop.cpp
+    src/inbound/inbound_fsm.cpp
+    src/common/socket_io.cpp
+    src/common/protocol.cpp
+)
+
+target_include_directories(connection_loop_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_link_libraries(connection_loop_test PRIVATE Threads::Threads)
