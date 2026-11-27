@@ -11,6 +11,7 @@ add_executable(peer
     src/main.cpp
     src/common/socket_io.cpp
     src/common/protocol.cpp
+    src/inbound/listener.cpp
 )
 
 add_executable(socket_io_test
@@ -28,6 +29,16 @@ add_executable(protocol_test
 )
 
 target_include_directories(protocol_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+add_executable(listener_test
+    tests/listener_test.cpp
+    src/inbound/listener.cpp
+    src/common/socket_io.cpp
+)
+
+target_include_directories(listener_test PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
