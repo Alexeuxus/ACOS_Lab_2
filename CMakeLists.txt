@@ -15,6 +15,7 @@ add_executable(peer
     src/inbound/inbound_fsm.cpp
     src/inbound/connection_loop.cpp
     src/common/socket_writer.cpp
+    src/outbound/connector.cpp
 )
 
 find_package(Threads REQUIRED)
