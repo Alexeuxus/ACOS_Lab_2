@@ -1,11 +1,13 @@
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <sys/socket.h>
 
 #include "inbound/inbound_fsm.hpp"
 #include "common/fd_guard.hpp"
 #include "common/socket_io.hpp"
 #include "common/protocol.hpp"
+#include "common/socket_writer.hpp"
 
 namespace {
 
@@ -28,6 +30,8 @@ int main() {
     FdGuard server(sockets[0]);
     FdGuard peer(sockets[1]);
 
+    SocketWriter writer(server.get());
+
     try {
         inbound::InboundFSM fsm;
 
@@ -44,7 +48,7 @@ int main() {
             protocol::Command::Ping
         };
 
-        fsm.handle_request(server.get(), request);
+        fsm.handle_request(writer, request);
 
         const auto response_text = peer_reader.recv_line();
 
@@ -89,7 +93,7 @@ int main() {
         bool error_caught = false;
 
         try {
-            fsm.handle_request(server.get(), invalid_request);
+            fsm.handle_request(writer, invalid_request);
         } catch (const std::invalid_argument&) {
             error_caught = true;
         }
@@ -114,7 +118,7 @@ int main() {
             protocol::Command::Ping
         };
 
-        fsm.handle_request(server.get(), second_request);
+        fsm.handle_request(writer, second_request);
 
         const auto second_response_text =
             peer_reader.recv_line();

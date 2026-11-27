@@ -9,6 +9,7 @@
 #include "common/fd_guard.hpp"
 #include "common/socket_io.hpp"
 #include "common/protocol.hpp"
+#include "common/socket_writer.hpp"
 
 int main() {
     int sockets[2];
@@ -20,6 +21,7 @@ int main() {
 
     FdGuard server(sockets[0]);
     FdGuard peer(sockets[1]);
+    SocketWriter server_writer(server.get());
 
     std::atomic<std::uint64_t> received_response_id{0};
     std::exception_ptr worker_error;
@@ -28,6 +30,7 @@ int main() {
         try {
             inbound::run_connection(
                 server.get(),
+                server_writer,
                 [&](const protocol::Message& message) {
                     if (message.kind == protocol::MessageKind::Response &&
                         message.command == protocol::Command::Pong) {

@@ -2,7 +2,6 @@
 #include <string>
 
 #include "inbound_fsm.hpp"
-#include "../common/socket_io.hpp"
 
 namespace inbound {
 
@@ -53,7 +52,7 @@ void InboundFSM::transition_to(State next) {
 }
 
 void InboundFSM::handle_request(
-    int fd,
+    SocketWriter& writer,
     const protocol::Message& request
 ) {
     if (state_ != State::WaitingRequest) {
@@ -84,10 +83,7 @@ void InboundFSM::handle_request(
     transition_to(State::SendingResponse);
 
     try {
-        const std::string response_text =
-            protocol::serialize(response) + "\n";
-
-        send_all(fd, response_text);
+        writer.send_line(protocol::serialize(response));
 
     } catch (...) {
         transition_to(State::Error);

@@ -8,6 +8,7 @@ namespace inbound {
 
 void run_connection(
     int fd,
+    SocketWriter& writer,
     const ResponseHandler& on_response
 ) {
     LineReader reader(fd);
@@ -26,7 +27,7 @@ void run_connection(
         switch (message.kind) {
 
             case protocol::MessageKind::Request:
-                fsm.handle_request(fd, message);
+                fsm.handle_request(writer, message);
                 break;
 
             case protocol::MessageKind::Response:

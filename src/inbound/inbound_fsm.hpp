@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/protocol.hpp"
+#include "../common/socket_writer.hpp"
 
 namespace inbound {
 
@@ -15,8 +16,8 @@ enum class State {
 class InboundFSM {
 public:
     void handle_request(
-        int fd,
-        const protocol::Message& request
+    SocketWriter& writer,
+    const protocol::Message& request
     );
 
     State state() const noexcept;
